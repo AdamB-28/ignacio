@@ -657,7 +657,7 @@ button { cursor: pointer; border: none; background: none; }
 .timeline-body p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; }
 
 /* ============================================================
-   GALLERY (GALERIA)
+   GALLERY — CAROUSEL
    ============================================================ */
 #galeria { padding: 120px 0; }
 .gallery-header { text-align: center; }
@@ -685,26 +685,49 @@ button { cursor: pointer; border: none; background: none; }
   color: var(--text);
   background: rgba(255,77,0,0.1);
 }
-.gallery-grid {
-  columns: 3 280px;
-  column-gap: 12px;
+
+/* Carousel wrapper */
+.carousel-wrap {
+  position: relative;
+  padding: 0 56px;
 }
+.carousel-track-outer {
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+.carousel-track {
+  display: flex;
+  gap: 12px;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  cursor: grab;
+  user-select: none;
+}
+.carousel-track.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+/* Carousel item */
 .gallery-item {
-  break-inside: avoid;
-  margin-bottom: 12px;
+  flex: 0 0 calc(25% - 9px);
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
   cursor: pointer;
+  aspect-ratio: 3/4;
+  background: var(--bg-card);
 }
 .gallery-item img,
 .gallery-item video {
-  width: 100%;
+  width: 100%; height: 100%;
   display: block;
+  object-fit: cover;
   transition: transform 0.5s ease;
+  pointer-events: none;
 }
 .gallery-item:hover img,
-.gallery-item:hover video { transform: scale(1.05); }
+.gallery-item:hover video { transform: scale(1.06); }
 .gallery-item-overlay {
   position: absolute;
   inset: 0;
@@ -758,6 +781,58 @@ button { cursor: pointer; border: none; background: none; }
 .gallery-item:hover .play-btn-static {
   transform: scale(1.1);
   background: var(--accent);
+}
+
+/* Arrow buttons */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px; height: 48px;
+  background: rgba(7,7,14,0.85);
+  border: 1px solid var(--border);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition), opacity var(--transition);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.carousel-arrow:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.carousel-arrow.disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+.carousel-prev { left: 0; }
+.carousel-next { right: 0; }
+
+/* Dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+.carousel-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  transition: background var(--transition), transform var(--transition);
+  cursor: pointer;
+  padding: 0;
+}
+.carousel-dot.active {
+  background: var(--accent);
+  transform: scale(1.4);
 }
 
 /* ============================================================
@@ -1009,6 +1084,7 @@ footer p { font-size: 0.8rem; color: var(--text-muted); }
   .projects-grid    { grid-template-columns: repeat(2, 1fr); }
   .stats-grid       { grid-template-columns: repeat(2, 1fr); }
   .contact-grid     { grid-template-columns: 1fr; gap: 48px; }
+  .gallery-item     { flex: 0 0 calc(33.333% - 8px); }
 }
 
 @media (max-width: 768px) {
@@ -1019,7 +1095,8 @@ footer p { font-size: 0.8rem; color: var(--text-muted); }
   .services-grid    { grid-template-columns: 1fr; }
   .projects-grid    { grid-template-columns: 1fr; }
   .stats-grid       { grid-template-columns: repeat(2, 1fr); }
-  .gallery-grid     { columns: 2 180px; }
+  .gallery-item     { flex: 0 0 calc(50% - 6px); }
+  .carousel-wrap    { padding: 0 44px; }
   .form-row         { grid-template-columns: 1fr; }
   #o-mnie, #uslugi, #wydarzenia, #wspolpraca, #galeria, #projekty, #kontakt { padding: 80px 0; }
   .timeline::before { display: none; }
@@ -1027,7 +1104,8 @@ footer p { font-size: 0.8rem; color: var(--text-muted); }
 
 @media (max-width: 480px) {
   .hero-actions { flex-direction: column; align-items: flex-start; }
-  .gallery-grid { columns: 1; }
+  .gallery-item { flex: 0 0 calc(80% - 6px); }
+  .carousel-wrap { padding: 0 36px; }
   .stats-grid   { grid-template-columns: 1fr; }
   .lightbox-prev { left: 8px; }
   .lightbox-next { right: 8px; }

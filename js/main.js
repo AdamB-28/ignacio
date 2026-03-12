@@ -129,47 +129,63 @@ const counterObserver = new IntersectionObserver(entries => {
 document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
 
 /* ============================================================
-   GALLERY — Build grid + filter
+   GALLERY — Carousel
    ============================================================ */
 function encodePath(path) {
   return path.split('/').map(seg => encodeURIComponent(seg)).join('/');
 }
 
+// Returns how many slides are fully visible at current viewport width
+function getPerView() {
+  const w = window.innerWidth;
+  if (w >= 1200) return 4;
+  if (w >= 900)  return 3;
+  if (w >= 600)  return 2;
+  return 1;
+}
+
+// Carousel state
+let carouselItems = [];   // filtered GALLERY subset (full GALLERY indices preserved)
+let carouselOffset = 0;   // current slide index (leftmost visible)
+
+const track     = document.getElementById('gallery-grid');
+const dotsWrap  = document.getElementById('carousel-dots');
+const btnPrev   = document.getElementById('carousel-prev');
+const btnNext   = document.getElementById('carousel-next');
+
 function buildGallery(filter = 'all') {
-  const grid = document.getElementById('gallery-grid');
-  grid.innerHTML = '';
+  carouselItems = filter === 'all' ? GALLERY.slice() : GALLERY.filter(i => i.category === filter);
+  carouselOffset = 0;
+  track.innerHTML = '';
 
-  const items = filter === 'all' ? GALLERY : GALLERY.filter(i => i.category === filter);
-
-  items.forEach((item, idx) => {
+  carouselItems.forEach((item) => {
     const realIdx = GALLERY.indexOf(item);
     const wrap = document.createElement('div');
-    wrap.className = 'gallery-item fade-in';
+    wrap.className = 'gallery-item';
     wrap.dataset.index = realIdx;
-    wrap.dataset.category = item.category;
 
     if (item.type === 'photo') {
       const img = document.createElement('img');
       img.src = encodePath(item.src);
       img.alt = 'Krakowski Event';
       img.loading = 'lazy';
+      img.draggable = false;
       const overlay = document.createElement('div');
       overlay.className = 'gallery-item-overlay';
-      overlay.innerHTML = '<div class="gallery-item-icon">🔍</div>';
+      overlay.innerHTML = '<div class="gallery-item-icon"><i class="fa-solid fa-magnifying-glass"></i></div>';
       wrap.appendChild(img);
       wrap.appendChild(overlay);
     } else {
-      // Video thumbnail
       const vid = document.createElement('video');
       vid.src = encodePath(item.src);
       vid.muted = true;
       vid.preload = 'metadata';
       vid.style.pointerEvents = 'none';
-      // Seek to 1s to get a frame
+      vid.draggable = false;
       vid.addEventListener('loadedmetadata', () => { vid.currentTime = 1; });
       const playOverlay = document.createElement('div');
       playOverlay.className = 'video-thumb-overlay';
-      playOverlay.innerHTML = '<div class="play-btn-static">▶</div>';
+      playOverlay.innerHTML = '<div class="play-btn-static"><i class="fa-solid fa-play"></i></div>';
       const hoverOverlay = document.createElement('div');
       hoverOverlay.className = 'gallery-item-overlay';
       wrap.appendChild(vid);
@@ -177,15 +193,129 @@ function buildGallery(filter = 'all') {
       wrap.appendChild(hoverOverlay);
     }
 
-    wrap.addEventListener('click', () => openLightbox(realIdx));
-    grid.appendChild(wrap);
+    wrap.addEventListener('click', () => {
+      if (!wasDragging) openLightbox(realIdx);
+    });
+    track.appendChild(wrap);
+  });
 
-    // Trigger fade-in observer for newly added items
-    fadeObserver.observe(wrap);
-    // Small delay so observer fires after append
-    requestAnimationFrame(() => wrap.classList.add('visible'));
+  renderCarousel();
+  buildDots();
+}
+
+function renderCarousel() {
+  const perView  = getPerView();
+  const total    = carouselItems.length;
+  const maxOffset = Math.max(0, total - perView);
+  carouselOffset  = Math.min(carouselOffset, maxOffset);
+
+  // Calculate item width including gap (gap = 12px)
+  const outer    = track.parentElement;
+  const gap      = 12;
+  const itemW    = (outer.clientWidth - gap * (perView - 1)) / perView;
+
+  // Apply width to all items
+  Array.from(track.children).forEach(el => {
+    el.style.width = itemW + 'px';
+    el.style.flexShrink = '0';
+  });
+
+  const shift = carouselOffset * (itemW + gap);
+  track.style.transform = `translateX(-${shift}px)`;
+
+  // Arrows
+  btnPrev.classList.toggle('disabled', carouselOffset === 0);
+  btnNext.classList.toggle('disabled', carouselOffset >= maxOffset);
+
+  // Dots
+  document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === carouselOffset);
   });
 }
+
+function buildDots() {
+  dotsWrap.innerHTML = '';
+  const perView  = getPerView();
+  const total    = carouselItems.length;
+  const count    = Math.max(0, total - perView + 1);
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Slajd ' + (i + 1));
+    dot.addEventListener('click', () => { carouselOffset = i; renderCarousel(); });
+    dotsWrap.appendChild(dot);
+  }
+}
+
+btnPrev.addEventListener('click', () => { carouselOffset--; renderCarousel(); });
+btnNext.addEventListener('click', () => { carouselOffset++; renderCarousel(); });
+
+// Rebuild dots & re-render on resize
+window.addEventListener('resize', () => { buildDots(); renderCarousel(); }, { passive: true });
+
+// ---- Drag / swipe support ----
+let dragStartX = 0;
+let dragStartOffset = 0;
+let isDragging = false;
+let wasDragging = false;
+
+track.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  isDragging = true;
+  wasDragging = false;
+  dragStartX = e.clientX;
+  dragStartOffset = carouselOffset;
+  track.classList.add('dragging');
+  track.setPointerCapture(e.pointerId);
+});
+
+track.addEventListener('pointermove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - dragStartX;
+  if (Math.abs(dx) > 6) wasDragging = true;
+
+  const outer = track.parentElement;
+  const perView = getPerView();
+  const gap = 12;
+  const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
+  const slidesMoved = -dx / (itemW + gap);
+  const raw = dragStartOffset + slidesMoved;
+  const maxOffset = Math.max(0, carouselItems.length - perView);
+  const clamped = Math.max(0, Math.min(raw, maxOffset));
+  const shift = clamped * (itemW + gap);
+  track.style.transform = `translateX(-${shift}px)`;
+});
+
+track.addEventListener('pointerup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  track.classList.remove('dragging');
+
+  const dx = e.clientX - dragStartX;
+  const outer = track.parentElement;
+  const perView = getPerView();
+  const gap = 12;
+  const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
+  const threshold = itemW * 0.25;
+  const maxOffset = Math.max(0, carouselItems.length - perView);
+
+  if (dx < -threshold) carouselOffset = Math.min(carouselOffset + 1, maxOffset);
+  else if (dx > threshold) carouselOffset = Math.max(carouselOffset - 1, 0);
+
+  renderCarousel();
+});
+
+// Touch swipe (passive)
+let touchStartX = 0;
+track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+track.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const perView = getPerView();
+  const maxOffset = Math.max(0, carouselItems.length - perView);
+  if (dx < -40) carouselOffset = Math.min(carouselOffset + 1, maxOffset);
+  else if (dx > 40)  carouselOffset = Math.max(carouselOffset - 1, 0);
+  renderCarousel();
+}, { passive: true });
 
 // Filter buttons
 document.querySelectorAll('.filter-btn').forEach(btn => {
