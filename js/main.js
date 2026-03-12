@@ -333,12 +333,12 @@ buildGallery();
    ============================================================ */
 let currentLbIndex = 0;
 const lightbox = document.getElementById('lightbox');
-const lbMedia = document.getElementById('lb-media');
+const lbMedia  = document.getElementById('lb-media');
 const lbCounter = document.getElementById('lb-counter');
 
 function openLightbox(idx) {
   currentLbIndex = idx;
-  renderLightboxMedia();
+  renderLightboxMedia(null);
   lightbox.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -349,49 +349,98 @@ function closeLightbox() {
   lbMedia.innerHTML = '';
 }
 
-function renderLightboxMedia() {
-  lbMedia.innerHTML = '';
+// direction: 'left' = going to next (slides in from right), 'right' = going to prev
+function renderLightboxMedia(direction) {
+  // Animate out old content if any
+  const existing = lbMedia.firstElementChild;
+  if (existing && direction) {
+    const outClass = direction === 'left' ? 'lb-slide-out-left' : 'lb-slide-out-right';
+    existing.style.animation = direction === 'left'
+      ? 'lbSlideOutLeft 0.2s ease both'
+      : 'lbSlideOutRight 0.2s ease both';
+    existing.addEventListener('animationend', () => existing.remove(), { once: true });
+  } else {
+    lbMedia.innerHTML = '';
+  }
+
   const item = GALLERY[currentLbIndex];
   lbCounter.textContent = (currentLbIndex + 1) + ' / ' + GALLERY.length;
 
+  let el;
   if (item.type === 'photo') {
-    const img = document.createElement('img');
-    img.src = encodePath(item.src);
-    img.className = 'lightbox-media';
-    img.alt = 'Krakowski Event';
-    lbMedia.appendChild(img);
+    el = document.createElement('img');
+    el.src = encodePath(item.src);
+    el.className = 'lightbox-media';
+    el.alt = 'Krakowski Event';
   } else {
-    const vid = document.createElement('video');
-    vid.src = encodePath(item.src);
-    vid.className = 'lightbox-media';
-    vid.controls = true;
-    vid.autoplay = true;
-    lbMedia.appendChild(vid);
+    el = document.createElement('video');
+    el.src = encodePath(item.src);
+    el.className = 'lightbox-media';
+    el.controls = true;
+    el.autoplay = true;
   }
+
+  if (direction) {
+    el.classList.add(direction === 'left' ? 'lb-slide-in-right' : 'lb-slide-in-left');
+  }
+  lbMedia.appendChild(el);
 }
 
 function lbPrev() {
   currentLbIndex = (currentLbIndex - 1 + GALLERY.length) % GALLERY.length;
-  renderLightboxMedia();
+  renderLightboxMedia('right');
 }
 function lbNext() {
   currentLbIndex = (currentLbIndex + 1) % GALLERY.length;
-  renderLightboxMedia();
+  renderLightboxMedia('left');
 }
 
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
 document.getElementById('lb-prev').addEventListener('click', lbPrev);
 document.getElementById('lb-next').addEventListener('click', lbNext);
 
-// Close on backdrop click
-lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+// Close on backdrop click (not on media)
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox || e.target === lbMedia) closeLightbox();
+});
 
 // Keyboard navigation
 document.addEventListener('keydown', e => {
   if (!lightbox.classList.contains('open')) return;
-  if (e.key === 'Escape')  closeLightbox();
-  if (e.key === 'ArrowLeft')  lbPrev();
-  if (e.key === 'ArrowRight') lbNext();
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowLeft')   lbPrev();
+  if (e.key === 'ArrowRight')  lbNext();
+});
+
+// Touch swipe inside lightbox
+let lbTouchStartX = 0;
+let lbTouchStartY = 0;
+lightbox.addEventListener('touchstart', e => {
+  lbTouchStartX = e.touches[0].clientX;
+  lbTouchStartY = e.touches[0].clientY;
+}, { passive: true });
+lightbox.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - lbTouchStartX;
+  const dy = e.changedTouches[0].clientY - lbTouchStartY;
+  if (Math.abs(dx) < Math.abs(dy) || Math.abs(dx) < 40) return; // vertical or too short
+  if (dx < 0) lbNext(); else lbPrev();
+}, { passive: true });
+
+// Pointer drag swipe (desktop + pen)
+let lbDragStartX = 0;
+let lbDragging = false;
+lightbox.addEventListener('pointerdown', e => {
+  if (e.target.tagName === 'VIDEO' || e.target.tagName === 'BUTTON') return;
+  lbDragStartX = e.clientX;
+  lbDragging = true;
+  lightbox.setPointerCapture(e.pointerId);
+});
+lightbox.addEventListener('pointerup', e => {
+  if (!lbDragging) return;
+  lbDragging = false;
+  const dx = e.clientX - lbDragStartX;
+  if (Math.abs(dx) < 40) return;
+  if (dx < 0) lbNext(); else lbPrev();
 });
 
 /* ============================================================

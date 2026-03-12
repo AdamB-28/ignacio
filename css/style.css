@@ -842,59 +842,115 @@ button { cursor: pointer; border: none; background: none; }
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(0,0,0,0.95);
+  background: rgba(0,0,0,0.96);
   display: none;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  touch-action: none;
 }
 #lightbox.open { display: flex; }
+
+/* Slide animations */
+@keyframes lbSlideInRight  { from { opacity:0; transform: translateX(60px);  } to { opacity:1; transform: translateX(0); } }
+@keyframes lbSlideInLeft   { from { opacity:0; transform: translateX(-60px); } to { opacity:1; transform: translateX(0); } }
+@keyframes lbSlideOutRight { from { opacity:1; transform: translateX(0); } to { opacity:0; transform: translateX(60px);  } }
+@keyframes lbSlideOutLeft  { from { opacity:1; transform: translateX(0); } to { opacity:0; transform: translateX(-60px); } }
+
+.lb-slide-in-right  { animation: lbSlideInRight  0.3s ease both; }
+.lb-slide-in-left   { animation: lbSlideInLeft   0.3s ease both; }
+
+/* Media wrapper — keeps image centred while animating */
+#lb-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: 88vh;
+  padding: 0 72px;  /* room for arrows on desktop */
+}
+
 .lightbox-media {
-  max-width: 90vw;
-  max-height: 85vh;
+  max-width: 100%;
+  max-height: 88vh;
   border-radius: 8px;
   object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
+video.lightbox-media { pointer-events: auto; }
+
 .lightbox-close {
   position: absolute;
-  top: 20px; right: 24px;
+  top: 16px; right: 16px;
   color: #fff;
-  font-size: 2rem;
-  line-height: 1;
+  font-size: 1.5rem;
   cursor: pointer;
-  opacity: 0.7;
-  transition: opacity var(--transition);
-  background: none;
+  opacity: 0.75;
+  transition: opacity var(--transition), background var(--transition);
+  background: rgba(255,255,255,0.1);
   border: none;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2;
 }
-.lightbox-close:hover { opacity: 1; }
+.lightbox-close:hover { opacity: 1; background: rgba(255,255,255,0.2); }
+
 .lightbox-prev,
 .lightbox-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   color: #fff;
-  font-size: 2rem;
-  opacity: 0.6;
+  font-size: 1.3rem;
+  opacity: 0.7;
   cursor: pointer;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.1);
   border: none;
   width: 52px; height: 52px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity var(--transition), background var(--transition);
+  transition: opacity var(--transition), background var(--transition), transform var(--transition);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2;
 }
-.lightbox-prev:hover, .lightbox-next:hover { opacity: 1; background: rgba(255,255,255,0.15); }
-.lightbox-prev { left: 20px; }
-.lightbox-next { right: 20px; }
+.lightbox-prev:hover, .lightbox-next:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.2);
+}
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
+
 .lightbox-counter {
   position: absolute;
-  bottom: 20px;
-  color: rgba(255,255,255,0.5);
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  bottom: 16px;
+  background: rgba(0,0,0,0.5);
+  padding: 4px 14px;
+  border-radius: 100px;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+}
+
+/* Swipe hint bar on mobile */
+.lightbox-swipe-hint {
+  position: absolute;
+  bottom: 44px;
+  color: rgba(255,255,255,0.3);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: none;
 }
 
 /* ============================================================
@@ -1088,25 +1144,62 @@ footer p { font-size: 0.8rem; color: var(--text-muted); }
 }
 
 @media (max-width: 768px) {
+  :root { --nav-h: 64px; }
+  .container { padding: 0 16px; }
+
   .nav-links, .nav-contact-btn { display: none; }
   #hamburger { display: flex; }
-  .about-grid { grid-template-columns: 1fr; }
-  .about-img-wrap { aspect-ratio: 4/3; }
+
+  /* Hero */
+  .hero-title       { font-size: clamp(2rem, 10vw, 2.8rem); }
+  .hero-desc        { font-size: 0.95rem; }
+  .hero-content     { padding-bottom: 60px; }
+  .btn-primary, .btn-outline { padding: 13px 24px; font-size: 0.85rem; }
+
+  /* Sections */
+  #o-mnie, #uslugi, #wydarzenia, #wspolpraca, #galeria, #projekty, #kontakt { padding: 72px 0; }
+  .section-title    { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+  .about-grid       { grid-template-columns: 1fr; }
+  .about-img-wrap   { aspect-ratio: 4/3; }
   .services-grid    { grid-template-columns: 1fr; }
   .projects-grid    { grid-template-columns: 1fr; }
   .stats-grid       { grid-template-columns: repeat(2, 1fr); }
+
+  /* Gallery */
   .gallery-item     { flex: 0 0 calc(50% - 6px); }
   .carousel-wrap    { padding: 0 44px; }
+
+  /* Contact */
   .form-row         { grid-template-columns: 1fr; }
-  #o-mnie, #uslugi, #wydarzenia, #wspolpraca, #galeria, #projekty, #kontakt { padding: 80px 0; }
+  .contact-grid     { gap: 40px; }
+
+  /* Timeline */
   .timeline::before { display: none; }
+  .timeline-item    { gap: 20px; }
+
+  /* Lightbox: arrows move to bottom bar on mobile */
+  .lightbox-prev, .lightbox-next {
+    top: auto;
+    bottom: 48px;
+    transform: none;
+    width: 48px; height: 48px;
+  }
+  .lightbox-prev  { left: calc(50% - 60px); }
+  .lightbox-next  { right: calc(50% - 60px); }
+  .lightbox-counter { bottom: 10px; }
+  #lb-media       { padding: 0 12px; max-height: 75vh; }
+  .lightbox-swipe-hint { display: block; }
 }
 
 @media (max-width: 480px) {
-  .hero-actions { flex-direction: column; align-items: flex-start; }
-  .gallery-item { flex: 0 0 calc(80% - 6px); }
-  .carousel-wrap { padding: 0 36px; }
-  .stats-grid   { grid-template-columns: 1fr; }
-  .lightbox-prev { left: 8px; }
-  .lightbox-next { right: 8px; }
+  .container      { padding: 0 14px; }
+  .hero-title     { font-size: clamp(1.8rem, 9vw, 2.4rem); }
+  .hero-actions   { flex-direction: column; align-items: stretch; }
+  .btn-primary, .btn-outline { text-align: center; }
+  .gallery-item   { flex: 0 0 calc(80% - 6px); }
+  .carousel-wrap  { padding: 0 32px; }
+  .carousel-arrow { width: 36px; height: 36px; font-size: 1rem; }
+  .stats-grid     { grid-template-columns: 1fr; }
+  .service-card   { padding: 24px 20px; }
+  .gate-logo      { font-size: 1.5rem; }
 }
