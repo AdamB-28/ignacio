@@ -482,6 +482,138 @@ lightbox.addEventListener('pointerup', e => {
 });
 
 /* ============================================================
+   EVENTS CALENDAR — Google Sheets CSV
+   ============================================================ */
+const CALENDAR_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQQ-MsL-Gj0xweenzdzxxXCJiZ2x5UJLUH-Hl32F1VIgw9uL6L-OWYMpffapL1Z4U1fcu6h60aSuQZ1/pub?gid=0&single=true&output=csv';
+
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.replace(/\r/g, '').split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const cols = [];
+    let inQuote = false, col = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQuote && line[i + 1] === '"') { col += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (c === ',' && !inQuote) {
+        cols.push(col.trim()); col = '';
+      } else {
+        col += c;
+      }
+    }
+    cols.push(col.trim());
+    rows.push(cols);
+  }
+  return rows;
+}
+
+function parseEventDate(str) {
+  if (!str) return null;
+  const s = str.trim();
+  let m;
+  if ((m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/))) return new Date(+m[3], +m[2] - 1, +m[1]);
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)))   return new Date(+m[1], +m[2] - 1, +m[3]);
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) return new Date(+m[3], +m[2] - 1, +m[1]);
+  return null;
+}
+
+function formatEventDate(d) {
+  if (!d) return '';
+  return d.toLocaleDateString('pl-PL', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function findColIdx(headers, ...keywords) {
+  const h = headers.map(s => s.toLowerCase());
+  for (const kw of keywords) {
+    const i = h.findIndex(v => v.includes(kw));
+    if (i !== -1) return i;
+  }
+  return -1;
+}
+
+async function loadCalendar() {
+  const body = document.getElementById('calendar-body');
+  if (!body) return;
+
+  try {
+    const res = await fetch(CALENDAR_CSV_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if (rows.length < 1) throw new Error('empty');
+
+    const headers = rows[0];
+    const data = rows.slice(1).filter(r => r.some(c => c));
+
+    // Detect columns by common Polish/English header names
+    const iDate   = findColIdx(headers, 'data', 'date', 'kiedy', 'termin');
+    const iName   = findColIdx(headers, 'wydarzenie', 'nazwa', 'event', 'name', 'tytuł', 'tytul');
+    const iPlace  = findColIdx(headers, 'miejsce', 'location', 'venue', 'gdzie', 'sala', 'miasto');
+    const iStatus = findColIdx(headers, 'status', 'wolny', 'info');
+    const iNotes  = findColIdx(headers, 'opis', 'uwagi', 'notes', 'szczeg');
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    // Parse and sort
+    const events = data.map(r => ({
+      date:   iDate   >= 0 ? parseEventDate(r[iDate])   : null,
+      name:   iName   >= 0 ? r[iName]   : (r[0] || ''),
+      place:  iPlace  >= 0 ? r[iPlace]  : '',
+      status: iStatus >= 0 ? r[iStatus] : '',
+      notes:  iNotes  >= 0 ? r[iNotes]  : '',
+      raw: r,
+    })).filter(e => e.name || e.date);
+
+    if (iDate >= 0) events.sort((a, b) => (a.date || 0) - (b.date || 0));
+
+    const upcoming = events.filter(e => !e.date || e.date >= today);
+    const past     = events.filter(e => e.date && e.date < today);
+
+    function renderCard(e) {
+      const d = e.date;
+      let datePart = '';
+      if (d) {
+        const day   = d.getDate();
+        const month = d.toLocaleDateString('pl-PL', { month: 'short' }).replace('.', '');
+        const year  = d.getFullYear();
+        datePart = `<div class="event-date-box"><span class="event-day">${day}</span><span class="event-month">${month}</span><span class="event-year">${year}</span></div>`;
+      }
+      const statusBadge = e.status ? `<span class="event-badge">${e.status}</span>` : '';
+      const placePart   = e.place  ? `<span class="event-place"><i class="fa-solid fa-location-dot"></i> ${e.place}</span>` : '';
+      const notesPart   = e.notes  ? `<p class="event-notes">${e.notes}</p>` : '';
+      return `<div class="event-card">
+        ${datePart}
+        <div class="event-info">
+          <div class="event-name-row">${statusBadge}<h3 class="event-name">${e.name}</h3></div>
+          ${placePart}${notesPart}
+        </div>
+      </div>`;
+    }
+
+    let html = '';
+    if (upcoming.length) {
+      html += `<h3 class="cal-section-label">Nadchodzące</h3><div class="event-list">${upcoming.map(renderCard).join('')}</div>`;
+    } else {
+      html += `<p class="cal-empty">Brak zaplanowanych wydarzeń w najbliższym czasie.</p>`;
+    }
+    if (past.length) {
+      html += `<details class="cal-past"><summary>Poprzednie wydarzenia (${past.length})</summary><div class="event-list">${[...past].reverse().map(renderCard).join('')}</div></details>`;
+    }
+
+    body.innerHTML = html;
+
+  } catch (err) {
+    body.innerHTML = '<p class="cal-error"><i class="fa-solid fa-triangle-exclamation"></i> Nie udało się załadować terminarza. Spróbuj ponownie później.</p>';
+    console.error('Calendar fetch error:', err);
+  }
+}
+
+loadCalendar();
+
+/* ============================================================
    CONTACT FORM — Formspree (optional)
    Replace ACTION_URL with your Formspree endpoint, e.g.
    https://formspree.io/f/YOUR_CODE

@@ -1000,6 +1000,154 @@ video.lightbox-media { pointer-events: auto; }
 .lb-download-btn:hover { opacity: 0.85; }
 
 /* ============================================================
+   TERMINARZ WYDARZEŃ
+   ============================================================ */
+#kalendarz { padding: 120px 0; }
+.cal-header { text-align: center; margin-bottom: 60px; }
+
+.cal-loading, .cal-error, .cal-empty {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-muted);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.cal-error { color: #e05; }
+
+.cal-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.event-card {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.event-card:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.event-date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 60px;
+  background: var(--accent);
+  border-radius: 10px;
+  padding: 10px 6px;
+  line-height: 1.1;
+  gap: 2px;
+}
+.event-day   { font-size: 1.6rem; font-weight: 900; color: #fff; }
+.event-month { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em; }
+.event-year  { font-size: 0.65rem; color: rgba(255,255,255,0.65); }
+
+.event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.event-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.event-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.event-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255, 77, 0, 0.15);
+  color: var(--accent);
+  border: 1px solid rgba(255, 77, 0, 0.3);
+  white-space: nowrap;
+}
+
+.event-place {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.event-place i { color: var(--accent); font-size: 0.75rem; }
+
+.event-notes {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cal-past {
+  margin-top: 8px;
+}
+.cal-past summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding: 10px 0;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+}
+.cal-past summary::before {
+  content: '▶';
+  font-size: 0.6rem;
+  transition: transform 0.2s;
+  color: var(--accent);
+}
+.cal-past[open] summary::before { transform: rotate(90deg); }
+.cal-past .event-list { margin-top: 16px; opacity: 0.65; }
+.cal-past .event-card:hover { opacity: 1; }
+
+@media (max-width: 480px) {
+  .event-card { gap: 14px; padding: 14px 16px; }
+  .event-date-box { width: 50px; }
+  .event-day { font-size: 1.3rem; }
+}
+
+/* ============================================================
    SIDE PROJECTS (DODATKOWE PROJEKTY)
    ============================================================ */
 #projekty { padding: 120px 0; }
