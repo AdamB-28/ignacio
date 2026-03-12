@@ -422,6 +422,7 @@ function buildVideoFallback(src) {
     </a>
   `;
   return div;
+}
 
 function lbPrev() {
   currentLbIndex = (currentLbIndex - 1 + GALLERY.length) % GALLERY.length;
