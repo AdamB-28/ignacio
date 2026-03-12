@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Krakowski Event — DJ, Konferansjer, Organizacja Wydarzeń</title>
+  <meta name="description" content="Krakowski Event — kompleksowa obsługa wydarzeń muzycznych, studenckich i firmowych w Krakowie. DJ, konferansjer, nagłośnienie i oświetlenie." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Icons (Font Awesome free CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-Avb2QiuTnerhKKBJ+8dMJYSZ/Pv9Oi3RnlNOTK7JWqN6iXdbnpMK5m/T3UpJKvGdkOmfMg9X9GaZ4YE6pJA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       PASSWORD GATE
+       ============================================================ -->
+  <div id="gate">
+    <div class="gate-logo">Krakowski<span>Event</span></div>
+    <p class="gate-sub">Strefa prywatna — podaj hasło</p>
+    <div class="gate-box">
+      <label for="gate-input">Hasło</label>
+      <input type="password" id="gate-input" placeholder="••••••••••••" autocomplete="current-password" />
+      <p id="gate-error">Nieprawidłowe hasło. Spróbuj ponownie.</p>
+      <button id="gate-submit">Przejdź dalej</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN SITE CONTENT (hidden until unlocked)
+       ============================================================ -->
+  <div id="site-content" class="hidden">
+
+    <!-- NAVIGATION -->
+    <nav id="navbar">
+      <div class="nav-inner">
+        <a href="#hero" class="nav-logo">Krakowski<span>Event</span></a>
+        <ul class="nav-links">
+          <li><a href="#o-mnie">O mnie</a></li>
+          <li><a href="#uslugi">Usługi</a></li>
+          <li><a href="#galeria">Galeria</a></li>
+          <li><a href="#wspolpraca">Współpraca</a></li>
+          <li><a href="#projekty">Projekty</a></li>
+        </ul>
+        <a href="#kontakt" class="nav-contact-btn">Kontakt</a>
+        <button id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="mobile-menu">
+      <a href="#o-mnie">O mnie</a>
+      <a href="#uslugi">Usługi</a>
+      <a href="#galeria">Galeria</a>
+      <a href="#wspolpraca">Współpraca</a>
+      <a href="#projekty">Projekty</a>
+      <a href="#kontakt">Kontakt</a>
+    </div>
+
+    <main>
+
+      <!-- ========================================================
+           HERO
+           ======================================================== -->
+      <section id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-eyebrow fade-in">Kraków &amp; cała Polska</div>
+            <h1 class="hero-title fade-in delay-1">
+              Twoje wydarzenie.<br>
+              Muzyka, energia,<br>
+              <span class="accent">atmosfera.</span>
+            </h1>
+            <p class="hero-desc fade-in delay-2">
+              DJ, konferansjer i organizator wydarzeń z ponad 7-letnim doświadczeniem.
+              Bale wydziałowe, imprezy firmowe, festiwale — kompleksowo od A do Z.
+            </p>
+            <div class="hero-actions fade-in delay-3">
+              <a href="#uslugi" class="btn-primary">Poznaj ofertę</a>
+              <a href="#galeria" class="btn-outline">Zobacz galerię</a>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-hint">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          Przewiń
+        </div>
+      </section>
+
+      <!-- ========================================================
+           STATS
+           ======================================================== -->
+      <section id="stats">
+        <div class="container">
+          <div class="stats-grid">
+            <div class="stat-item fade-in">
+              <div class="stat-number" data-target="7" data-suffix="+">0+</div>
+              <div class="stat-label">Lat doświadczenia<br>w branży eventowej</div>
+            </div>
+            <div class="stat-item fade-in delay-1">
+              <div class="stat-number" data-target="50" data-suffix="+">0+</div>
+              <div class="stat-label">Zrealizowanych<br>wydarzeń studenckich</div>
+            </div>
+            <div class="stat-item fade-in delay-2">
+              <div class="stat-number" data-target="500" data-suffix="+">0+</div>
+              <div class="stat-label">Uczestników na<br>jednym wydarzeniu</div>
+            </div>
+            <div class="stat-item fade-in delay-3">
+              <div class="stat-number">A–Z</div>
+              <div class="stat-label">Kompleksowa obsługa<br>od początku do końca</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           O MNIE
+           ======================================================== -->
+      <section id="o-mnie">
+        <div class="container">
+          <div class="about-grid">
+            <div class="about-img-wrap fade-in">
+              <img
+                src="reference/ImagesAndVideosToUse/lesniakPH-9849.jpg"
+                alt="Ignacy Krakowski — DJ i konferansjer"
+                loading="lazy"
+              />
+              <div class="about-img-accent"></div>
+            </div>
+            <div class="about-text fade-in delay-1">
+              <span class="section-label">O mnie</span>
+              <h2 class="section-title">DJ, konferansjer<br>i organizator w<br>jednej osobie.</h2>
+              <p class="section-desc">
+                Ignacy Krakowski — założyciel Krakowski Event. Ponad 7 lat doświadczenia
+                w branży eventowej, setki imprez i tysiące zadowolonych uczestników.
+              </p>
+              <div class="about-highlights">
+                <div class="highlight-row">
+                  <div class="highlight-icon"><i class="fa-solid fa-music"></i></div>
+                  <p>Grał w krakowskich klubach <strong>Poczta Główna</strong> i <strong>Prozak 2.0</strong> — miejscach, które wyznaczają muzyczne standardy.</p>
+                </div>
+                <div class="highlight-row">
+                  <div class="highlight-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                  <p>Ponad <strong>50 wydarzeń studenckich</strong> — bale wydziałowe, absolutoria i imprezy Collegium Medicum UJ dla 500+ uczestników.</p>
+                </div>
+                <div class="highlight-row">
+                  <div class="highlight-icon"><i class="fa-solid fa-star"></i></div>
+                  <p>Współtwórca festiwali <strong>Skład Solny Fest</strong> i <strong>Outpost Festival</strong>. Aktywny w środowisku Outpost Collective.</p>
+                </div>
+                <div class="highlight-row">
+                  <div class="highlight-icon"><i class="fa-solid fa-microphone"></i></div>
+                  <p>Specialista ds. komunikacji — <strong>DJ i konferansjer w jednej osobie</strong> zadbają o muzykę i prowadzenie Twojego wydarzenia.</p>
+                </div>
+              </div>
+              <a href="#kontakt" class="btn-primary">Porozmawiajmy o Twoim wydarzeniu</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           USŁUGI
+           ======================================================== -->
+      <section id="uslugi">
+        <div class="container">
+          <div class="services-header">
+            <span class="section-label fade-in">Oferta</span>
+            <h2 class="section-title fade-in delay-1">Co oferuje<br>Krakowski Event</h2>
+            <p class="section-desc fade-in delay-2">
+              Kompleksowa obsługa Twojego wydarzenia — od muzyki przez nagłośnienie
+              po prowadzenie i organizację. Wszystko w jednym miejscu.
+            </p>
+          </div>
+          <div class="services-grid">
+            <div class="service-card fade-in">
+              <div class="service-icon"><i class="fa-solid fa-headphones"></i></div>
+              <h3>DJ na wydarzeniu</h3>
+              <p>Muzyka dobrana do charakteru imprezy i energii uczestników — od ciepłych melodii do klubowych setów. Gramy z serca, nie z playlisty.</p>
+            </div>
+            <div class="service-card fade-in delay-1">
+              <div class="service-icon"><i class="fa-solid fa-microphone-lines"></i></div>
+              <h3>Konferansjerka</h3>
+              <p>Profesjonalne prowadzenie wydarzeń z humorem, klasą i wyczuciem. Od powitania gości po zakończenie uroczystości — płynnie i bez stresu.</p>
+            </div>
+            <div class="service-card fade-in delay-2">
+              <div class="service-icon"><i class="fa-solid fa-volume-high"></i></div>
+              <h3>Nagłośnienie</h3>
+              <p>Własny profesjonalny sprzęt nagłaśniający dopasowany do wielkości sali i charakteru imprezy. Montaż 1–3 godziny przed wydarzeniem.</p>
+            </div>
+            <div class="service-card fade-in delay-3">
+              <div class="service-icon"><i class="fa-solid fa-lightbulb"></i></div>
+              <h3>Oświetlenie sali</h3>
+              <p>Dekoracja przestrzeni światłem tworząca wyjątkową atmosferę. Profesjonalne oprawy świetlne dopasowane do stylu i nastroju Twojego eventu.</p>
+            </div>
+            <div class="service-card fade-in delay-4">
+              <div class="service-icon"><i class="fa-solid fa-calendar-check"></i></div>
+              <h3>Organizacja wydarzenia</h3>
+              <p>Konsultacje, harmonogram, animacje i gry integracyjne dla uczestników. Wsparcie organizatora na każdym etapie — od planowania po realizację.</p>
+            </div>
+            <div class="service-card fade-in delay-5">
+              <div class="service-icon"><i class="fa-solid fa-bullhorn"></i></div>
+              <h3>Promocja wydarzeń</h3>
+              <p>Wsparcie w marketingu i promocji Twojego eventu. Tworzenie muzyki do reklam oraz planowanie komunikacji dla organizatorów kulturalnych.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           RODZAJE WYDARZEŃ
+           ======================================================== -->
+      <section id="wydarzenia">
+        <div class="container">
+          <div class="events-header">
+            <span class="section-label fade-in">Doświadczenie</span>
+            <h2 class="section-title fade-in delay-1">Jakie wydarzenia<br>obsługuję?</h2>
+            <p class="section-desc fade-in delay-2">
+              Wieloletnia praktyka przy wydarzeniach różnego typu i skali sprawia,
+              że każde zlecenie realizuję z pełnym zaangażowaniem i znajomością realiów.
+            </p>
+          </div>
+          <div class="events-pills fade-in delay-2">
+            <span class="pill"><span class="pill-dot"></span>Wesela</span>
+            <span class="pill"><span class="pill-dot"></span>Wydarzenia firmowe</span>
+            <span class="pill"><span class="pill-dot"></span>Bale studenckie</span>
+            <span class="pill"><span class="pill-dot"></span>Bale wydziałowe</span>
+            <span class="pill"><span class="pill-dot"></span>Absolutoria</span>
+            <span class="pill"><span class="pill-dot"></span>Imprezy klubowe</span>
+            <span class="pill"><span class="pill-dot"></span>Festiwale muzyczne</span>
+            <span class="pill"><span class="pill-dot"></span>Wydarzenia kulturalne</span>
+            <span class="pill"><span class="pill-dot"></span>Pikniki rodzinne</span>
+            <span class="pill"><span class="pill-dot"></span>Bale ósmoklasisty</span>
+            <span class="pill"><span class="pill-dot"></span>Dyskoteki szkolne</span>
+            <span class="pill"><span class="pill-dot"></span>Studniówki</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           GALERIA
+           ======================================================== -->
+      <section id="galeria">
+        <div class="container">
+          <div class="gallery-header">
+            <span class="section-label fade-in">Portfolio</span>
+            <h2 class="section-title fade-in delay-1">Galeria wydarzeń</h2>
+            <p class="section-desc fade-in delay-2">
+              Zdjęcia i nagrania z realizowanych wydarzeń — bale wydziałowe, połówki
+              kierunków lekarskich i wiele więcej.
+            </p>
+          </div>
+
+          <div class="gallery-filter fade-in delay-2">
+            <button class="filter-btn active" data-filter="all">Wszystkie</button>
+            <button class="filter-btn" data-filter="bale">Bale</button>
+            <button class="filter-btn" data-filter="studenckie">Połówki</button>
+            <button class="filter-btn" data-filter="wideo">Wideo</button>
+          </div>
+
+          <div class="gallery-grid" id="gallery-grid">
+            <!-- Populated by main.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           JAK WYGLĄDA WSPÓŁPRACA
+           ======================================================== -->
+      <section id="wspolpraca">
+        <div class="container">
+          <div class="process-header">
+            <span class="section-label fade-in">Proces</span>
+            <h2 class="section-title fade-in delay-1">Jak wygląda<br>współpraca?</h2>
+            <p class="section-desc fade-in delay-2">
+              Jasny proces od pierwszego kontaktu do realizacji — bez niespodzianek,
+              z pełną kontrolą nad każdym szczegółem.
+            </p>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item fade-in">
+              <div class="timeline-num">1</div>
+              <div class="timeline-body">
+                <h3>Pierwszy kontakt i rozmowa o wydarzeniu</h3>
+                <p>Współpraca rozpoczyna się od krótkiej rozmowy telefonicznej lub wiadomości. Ustalamy liczbę uczestników, miejsce, charakter eventu oraz oczekiwania dotyczące muzyki i prowadzenia. Na podstawie tych informacji w ciągu kilku godzin przygotowywana jest wstępna oferta.</p>
+              </div>
+            </div>
+            <div class="timeline-item fade-in delay-1">
+              <div class="timeline-num">2</div>
+              <div class="timeline-body">
+                <h3>Planowanie wydarzenia</h3>
+                <p>Wspólnie ustalamy harmonogram, momenty wejść muzycznych, przemówienia i elementy integracyjne oraz repertuar. Możesz przygotować playlistę preferowanych utworów i wskazać muzykę, której nie chcesz na imprezie.</p>
+              </div>
+            </div>
+            <div class="timeline-item fade-in delay-2">
+              <div class="timeline-num">3</div>
+              <div class="timeline-body">
+                <h3>Przygotowanie techniczne</h3>
+                <p>Przed wydarzeniem ustalamy wszystkie kwestie techniczne — nagłośnienie, oświetlenie, ustawienie stanowiska DJ. Sprzęt dobierany jest do wielkości sali. Montaż odbywa się zazwyczaj 1–3 godziny przed startem.</p>
+              </div>
+            </div>
+            <div class="timeline-item fade-in delay-3">
+              <div class="timeline-num">4</div>
+              <div class="timeline-body">
+                <h3>Realizacja wydarzenia</h3>
+                <p>Podczas imprezy pełnię rolę DJ-a i konferansjera, dbając o atmosferę i płynność programu. Muzyka i prowadzenie są na bieżąco dostosowywane do energii uczestników — reagujemy, nie gramy z automatu.</p>
+              </div>
+            </div>
+            <div class="timeline-item fade-in delay-4">
+              <div class="timeline-num">5</div>
+              <div class="timeline-body">
+                <h3>Dodatkowe atrakcje</h3>
+                <p>Możliwe jest rozszerzenie eventu o dodatkowe elementy dzięki sieci partnerów — fotobudki, wokaliści, instrumentaliści i inne atrakcje sceniczne dopasowane do charakteru imprezy.</p>
+              </div>
+            </div>
+            <div class="timeline-item fade-in delay-5">
+              <div class="timeline-num">6</div>
+              <div class="timeline-body">
+                <h3>Po wydarzeniu</h3>
+                <p>Po zakończeniu możliwa jest dalsza współpraca przy kolejnych realizacjach oraz wsparcie przy planowaniu przyszłych eventów. Budujemy relacje, nie jednorazowe zlecenia.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           DODATKOWE PROJEKTY
+           ======================================================== -->
+      <section id="projekty">
+        <div class="container">
+          <div class="projects-header">
+            <span class="section-label fade-in">Aktywność</span>
+            <h2 class="section-title fade-in delay-1">Dodatkowe projekty</h2>
+            <p class="section-desc fade-in delay-2">
+              Poza działalnością eventową angażuję się w projekty muzyczne i edukacyjne,
+              które kształtują krakowską scenę kulturalną.
+            </p>
+          </div>
+          <div class="projects-grid">
+            <div class="project-card fade-in">
+              <span class="project-emoji">🎵</span>
+              <h3>Nojss — muzyczne eventy</h3>
+              <p>Organizacja autorskich wydarzeń muzycznych pod marką Nojss — kameralnych i festiwalowych, skupiających społeczność wokół dobrej muzyki i nowych artystów.</p>
+            </div>
+            <div class="project-card fade-in delay-1">
+              <span class="project-emoji">🌐</span>
+              <h3>Outpost Collective</h3>
+              <p>Aktywny współtwórca środowiska Outpost Collective — niezależnej sceny muzycznej łączącej artystów, DJów i pasjonatów kultury elektronicznej. Współorganizator Outpost Festival i Skład Solny Fest.</p>
+            </div>
+            <div class="project-card fade-in delay-2">
+              <span class="project-emoji">🎧</span>
+              <h3>Szkoła DJ dla dzieci</h3>
+              <p>Prowadzenie zajęć DJ-skich dla najmłodszych — edukacja muzyczna przez zabawę. Rozwijanie słuchu, rytmu i kreatywności u dzieci w przyjazny i angażujący sposób.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           KONTAKT
+           ======================================================== -->
+      <section id="kontakt">
+        <div class="container">
+          <div class="contact-grid">
+            <!-- Left: info -->
+            <div>
+              <span class="section-label fade-in">Kontakt</span>
+              <div class="contact-heading fade-in delay-1">
+                <h2 class="section-title">Zaplanujmy<br>Twoje wydarzenie.</h2>
+                <p>
+                  Napisz lub zadzwoń — chętnie porozmawiam o szczegółach Twojego eventu.
+                  W ciągu kilku godzin prześlę wstępną ofertę dopasowaną do Twoich potrzeb.
+                </p>
+              </div>
+              <div class="contact-details fade-in delay-2">
+                <div class="contact-row">
+                  <div class="contact-row-icon"><i class="fa-solid fa-phone"></i></div>
+                  <div class="contact-row-text">
+                    <small>Telefon</small>
+                    <a href="tel:+48000000000">+48 000 000 000</a>
+                  </div>
+                </div>
+                <div class="contact-row">
+                  <div class="contact-row-icon"><i class="fa-solid fa-envelope"></i></div>
+                  <div class="contact-row-text">
+                    <small>E-mail</small>
+                    <a href="mailto:kontakt@krakowskievent.pl">kontakt@krakowskievent.pl</a>
+                  </div>
+                </div>
+                <div class="contact-row">
+                  <div class="contact-row-icon"><i class="fa-solid fa-location-dot"></i></div>
+                  <div class="contact-row-text">
+                    <small>Lokalizacja</small>
+                    <span>Kraków i cała Polska</span>
+                  </div>
+                </div>
+              </div>
+              <div class="social-links fade-in delay-3">
+                <a href="#" class="social-link" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="social-link" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="social-link" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" class="social-link" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="social-link" aria-label="SoundCloud"><i class="fa-brands fa-soundcloud"></i></a>
+              </div>
+            </div>
+            <!-- Right: form -->
+            <div class="fade-in delay-2">
+              <form id="contact-form" action="#" method="POST" class="contact-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="cf-name">Imię i nazwisko</label>
+                    <input type="text" id="cf-name" name="name" placeholder="Jan Kowalski" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="cf-phone">Telefon</label>
+                    <input type="tel" id="cf-phone" name="phone" placeholder="+48 600 100 200" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="cf-email">Adres e-mail</label>
+                  <input type="email" id="cf-email" name="email" placeholder="jan@email.pl" required />
+                </div>
+                <div class="form-group">
+                  <label for="cf-type">Rodzaj wydarzenia</label>
+                  <select id="cf-type" name="event_type">
+                    <option value="" disabled selected>Wybierz rodzaj...</option>
+                    <option>Bal studencki / wydziałowy</option>
+                    <option>Impreza firmowa</option>
+                    <option>Wesele</option>
+                    <option>Festiwal / koncert</option>
+                    <option>Impreza klubowa</option>
+                    <option>Inne</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="cf-date">Planowana data</label>
+                  <input type="date" id="cf-date" name="date" />
+                </div>
+                <div class="form-group">
+                  <label for="cf-msg">Wiadomość</label>
+                  <textarea id="cf-msg" name="message" placeholder="Opisz swoje wydarzenie — miejsce, liczba uczestników, oczekiwania..."></textarea>
+                </div>
+                <button type="submit" class="form-submit">Wyślij wiadomość</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-logo">Krakowski<span>Event</span></div>
+          <p>© 2026 Krakowski Event — Ignacy Krakowski. Wszelkie prawa zastrzeżone.</p>
+          <p>Kraków, Polska</p>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /#site-content -->
+
+  <!-- ============================================================
+       LIGHTBOX
+       ============================================================ -->
+  <div id="lightbox">
+    <button id="lb-close" class="lightbox-close" aria-label="Zamknij">&times;</button>
+    <button id="lb-prev" class="lightbox-prev" aria-label="Poprzedni">&#8249;</button>
+    <div id="lb-media"></div>
+    <button id="lb-next" class="lightbox-next" aria-label="Następny">&#8250;</button>
+    <div id="lb-counter" class="lightbox-counter"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/password.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
