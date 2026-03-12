@@ -953,6 +953,52 @@ video.lightbox-media { pointer-events: auto; }
   display: none;
 }
 
+/* Video placeholder when format is unsupported (carousel thumbnail) */
+.video-unsupported {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.video-unsupported i { font-size: 2rem; color: var(--accent); }
+
+/* Lightbox error card for unsupported video formats (e.g. .MOV in Chrome/FF) */
+.lb-video-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 32px;
+  text-align: center;
+  color: #fff;
+  max-width: 400px;
+}
+.lb-video-error i.fa-video-slash { font-size: 3rem; color: var(--accent); }
+.lb-video-error p { margin: 0; font-size: 1rem; }
+.lb-video-error small { color: var(--text-muted); font-size: 0.85rem; }
+.lb-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+.lb-download-btn:hover { opacity: 0.85; }
+
 /* ============================================================
    SIDE PROJECTS (DODATKOWE PROJEKTY)
    ============================================================ */

@@ -186,6 +186,16 @@ function buildGallery(filter = 'all') {
       const playOverlay = document.createElement('div');
       playOverlay.className = 'video-thumb-overlay';
       playOverlay.innerHTML = '<div class="play-btn-static"><i class="fa-solid fa-play"></i></div>';
+      // Show fallback icon when browser can't play the format (e.g. .MOV in Chrome)
+      vid.addEventListener('error', () => {
+        vid.style.display = 'none';
+        if (!wrap.querySelector('.video-unsupported')) {
+          const fb = document.createElement('div');
+          fb.className = 'video-unsupported';
+          fb.innerHTML = '<i class="fa-solid fa-film"></i><span>Wideo</span>';
+          wrap.insertBefore(fb, playOverlay);
+        }
+      });
       const hoverOverlay = document.createElement('div');
       hoverOverlay.className = 'gallery-item-overlay';
       wrap.appendChild(vid);
@@ -193,6 +203,7 @@ function buildGallery(filter = 'all') {
       wrap.appendChild(hoverOverlay);
     }
 
+    // Click handler — checked AFTER drag logic resets wasDragging
     wrap.addEventListener('click', () => {
       if (!wasDragging) openLightbox(realIdx);
     });
@@ -254,58 +265,65 @@ btnNext.addEventListener('click', () => { carouselOffset++; renderCarousel(); })
 window.addEventListener('resize', () => { buildDots(); renderCarousel(); }, { passive: true });
 
 // ---- Drag / swipe support ----
+// NOTE: We intentionally avoid setPointerCapture so that the native
+// 'click' event still fires on child .gallery-item elements.
 let dragStartX = 0;
 let dragStartOffset = 0;
 let isDragging = false;
 let wasDragging = false;
 
 track.addEventListener('pointerdown', e => {
-  if (e.button !== 0) return;
+  if (e.button !== 0 || e.target.tagName === 'BUTTON') return;
   isDragging = true;
   wasDragging = false;
   dragStartX = e.clientX;
   dragStartOffset = carouselOffset;
   track.classList.add('dragging');
-  track.setPointerCapture(e.pointerId);
+
+  function onMove(ev) {
+    if (!isDragging) return;
+    const dx = ev.clientX - dragStartX;
+    if (Math.abs(dx) > 6) wasDragging = true;
+    const outer = track.parentElement;
+    const perView = getPerView();
+    const gap = 12;
+    const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
+    const slidesMoved = -dx / (itemW + gap);
+    const raw = dragStartOffset + slidesMoved;
+    const maxOffset = Math.max(0, carouselItems.length - perView);
+    const clamped = Math.max(0, Math.min(raw, maxOffset));
+    track.style.transform = `translateX(-${clamped * (itemW + gap)}px)`;
+  }
+
+  function onUp(ev) {
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    if (!isDragging) return;
+    isDragging = false;
+    track.classList.remove('dragging');
+
+    const dx = ev.clientX - dragStartX;
+    const outer = track.parentElement;
+    const perView = getPerView();
+    const gap = 12;
+    const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
+    const threshold = itemW * 0.25;
+    const maxOffset = Math.max(0, carouselItems.length - perView);
+
+    if (dx < -threshold) carouselOffset = Math.min(carouselOffset + 1, maxOffset);
+    else if (dx > threshold) carouselOffset = Math.max(carouselOffset - 1, 0);
+
+    renderCarousel();
+
+    // Reset wasDragging AFTER the click event fires (click fires sync before setTimeout)
+    setTimeout(() => { wasDragging = false; }, 0);
+  }
+
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp);
 });
 
-track.addEventListener('pointermove', e => {
-  if (!isDragging) return;
-  const dx = e.clientX - dragStartX;
-  if (Math.abs(dx) > 6) wasDragging = true;
-
-  const outer = track.parentElement;
-  const perView = getPerView();
-  const gap = 12;
-  const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
-  const slidesMoved = -dx / (itemW + gap);
-  const raw = dragStartOffset + slidesMoved;
-  const maxOffset = Math.max(0, carouselItems.length - perView);
-  const clamped = Math.max(0, Math.min(raw, maxOffset));
-  const shift = clamped * (itemW + gap);
-  track.style.transform = `translateX(-${shift}px)`;
-});
-
-track.addEventListener('pointerup', e => {
-  if (!isDragging) return;
-  isDragging = false;
-  track.classList.remove('dragging');
-
-  const dx = e.clientX - dragStartX;
-  const outer = track.parentElement;
-  const perView = getPerView();
-  const gap = 12;
-  const itemW = (outer.clientWidth - gap * (perView - 1)) / perView;
-  const threshold = itemW * 0.25;
-  const maxOffset = Math.max(0, carouselItems.length - perView);
-
-  if (dx < -threshold) carouselOffset = Math.min(carouselOffset + 1, maxOffset);
-  else if (dx > threshold) carouselOffset = Math.max(carouselOffset - 1, 0);
-
-  renderCarousel();
-});
-
-// Touch swipe (passive)
+// Touch swipe (passive) — for devices that don't fire pointer events well
 let touchStartX = 0;
 track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
 track.addEventListener('touchend', e => {
@@ -373,11 +391,16 @@ function renderLightboxMedia(direction) {
     el.className = 'lightbox-media';
     el.alt = 'Krakowski Event';
   } else {
+    // Try video; fall back to a styled error card if format unsupported (e.g. .MOV in Chrome/FF)
     el = document.createElement('video');
     el.src = encodePath(item.src);
     el.className = 'lightbox-media';
     el.controls = true;
     el.autoplay = true;
+    el.playsInline = true;
+    el.addEventListener('error', () => {
+      el.replaceWith(buildVideoFallback(item.src));
+    });
   }
 
   if (direction) {
@@ -385,6 +408,20 @@ function renderLightboxMedia(direction) {
   }
   lbMedia.appendChild(el);
 }
+
+function buildVideoFallback(src) {
+  const filename = decodeURIComponent(src.split('/').pop());
+  const div = document.createElement('div');
+  div.className = 'lb-video-error';
+  div.innerHTML = `
+    <i class="fa-solid fa-video-slash"></i>
+    <p>Ten format wideo czar nie jest obsługiwany w tej przeglądarce.</p>
+    <small>Spróbuj otworzyć w <strong>Safari</strong> lub pobierz plik.</small>
+    <a href="${encodePath(src)}" download class="lb-download-btn">
+      <i class="fa-solid fa-download"></i> Pobierz wideo
+    </a>
+  `;
+  return div;
 
 function lbPrev() {
   currentLbIndex = (currentLbIndex - 1 + GALLERY.length) % GALLERY.length;
